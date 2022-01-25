@@ -18,6 +18,9 @@ import csc4500.core.search.framework.problem.Problem;
 import csc4500.core.search.framework.qsearch.GraphSearch;
 import csc4500.core.search.informed.AStarSearch;
 import csc4500.core.search.informed.GreedyBestFirstSearch;
+import csc4500.core.search.local.SimulatedAnnealingSearch;
+import csc4500.core.search.uninformed.DepthLimitedSearch;
+import csc4500.core.search.uninformed.IterativeDeepeningSearch;
 
 /**
  * @author YOUR NAME HERE Code adapted for Villanova CSC 4500 Project assignment
@@ -41,14 +44,47 @@ public class CSC4500Project {
 		eightPuzzleAStarManhattanDemo(extreme, new ManhattanHeuristicFunction());
 
 	}
+	
+	
 
 	// Within each search function, the Heuristic Function can be changed
+	private static void eightPuzzleDLSDemo(EightPuzzleBoard puzzleBoard) {
+		System.out.println("\nEightPuzzleDemo recursive DLS (9) -->");
+		try {
+			Problem problem = new Problem(puzzleBoard, EightPuzzleFunctionFactory.getActionsFunction(),
+					EightPuzzleFunctionFactory.getResultFunction(), new EightPuzzleGoalTest());
+			SearchForActions search = new DepthLimitedSearch(9);
+			SearchAgent agent = new SearchAgent(problem, search);
+			printActions(agent.getActions());
+			printInstrumentation(agent.getInstrumentation());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private static void eightPuzzleIDLSDemo(EightPuzzleBoard puzzleBoard) {
+		System.out.println("\nEightPuzzleDemo Iterative DLS -->");
+		try {
+			Problem problem = new Problem(puzzleBoard, EightPuzzleFunctionFactory.getActionsFunction(),
+					EightPuzzleFunctionFactory.getResultFunction(), new EightPuzzleGoalTest());
+			SearchForActions search = new IterativeDeepeningSearch();
+			SearchAgent agent = new SearchAgent(problem, search);
+			printActions(agent.getActions());
+			printInstrumentation(agent.getInstrumentation());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
 	private static void eightPuzzleGreedyBestFirstDemo(EightPuzzleBoard puzzleBoard, HeuristicFunction hf) {
 		System.out.println("\nEightPuzzleDemo Greedy Best First Search (MisplacedTileHeursitic)-->");
 		try {
 			Problem problem = new Problem(puzzleBoard, EightPuzzleFunctionFactory.getActionsFunction(),
 					EightPuzzleFunctionFactory.getResultFunction(), new EightPuzzleGoalTest());
-			SearchForActions search = new GreedyBestFirstSearch(new GraphSearch(), hf);
+			SearchForActions search = new GreedyBestFirstSearch(new GraphSearch(),
+					hf);
 			SearchAgent agent = new SearchAgent(problem, search);
 			printActions(agent.getActions());
 			printInstrumentation(agent.getInstrumentation());
@@ -82,11 +118,27 @@ public class CSC4500Project {
 			SearchAgent agent = new SearchAgent(problem, search);
 			printActions(agent.getActions());
 			printInstrumentation(agent.getInstrumentation());
-
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
+	}
+
+	private static void eightPuzzleSimulatedAnnealingDemo(EightPuzzleBoard puzzleBoard, HeuristicFunction hf) {
+		System.out.println("\nEightPuzzleDemo Simulated Annealing  Search -->");
+		try {
+			Problem problem = new Problem(puzzleBoard, EightPuzzleFunctionFactory.getActionsFunction(),
+					EightPuzzleFunctionFactory.getResultFunction(), new EightPuzzleGoalTest());
+			SimulatedAnnealingSearch search = new SimulatedAnnealingSearch(hf);
+			SearchAgent agent = new SearchAgent(problem, search);
+			printActions(agent.getActions());
+			System.out.println("Search Outcome=" + search.getOutcome());
+			System.out.println("Final State=\n" + search.getLastSearchState());
+			printInstrumentation(agent.getInstrumentation());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void eightPuzzleAStarManhattanDemo(EightPuzzleBoard puzzleBoard, HeuristicFunction hf) {
@@ -94,7 +146,7 @@ public class CSC4500Project {
 		try {
 			Problem problem = new Problem(puzzleBoard, EightPuzzleFunctionFactory.getActionsFunction(),
 					EightPuzzleFunctionFactory.getResultFunction(), new EightPuzzleGoalTest());
-			SearchForActions search = new AStarSearch(new GraphSearch(), hf);
+			SearchForActions search = new AStarSearch(new GraphSearch(),hf);
 			SearchAgent agent = new SearchAgent(problem, search);
 			printActions(agent.getActions());
 			printInstrumentation(agent.getInstrumentation());
