@@ -5,8 +5,8 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry excluding="core_files/|project_files/" kind="src" path="src"/>
+	<classpathentry excluding="core_files/|project_files/|project_files/csc4500/project/assignment/" kind="src" path="src"/>
 	<classpathentry kind="src" path="src/core_files"/>
-	<classpathentry kind="src" path="src/project_files"/>
+	<classpathentry excluding="csc4500/project/assignment/" kind="src" path="src/project_files"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

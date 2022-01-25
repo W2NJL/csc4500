@@ -1,31 +1,36 @@
+// CSC 4500 Programming Project
+// Use this file to execute all assignments
 
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-import aima.core.agent.Action;
-import aima.core.environment.eightpuzzle.EightPuzzleBoard;
-import aima.core.environment.eightpuzzle.EightPuzzleFunctionFactory;
-import aima.core.environment.eightpuzzle.EightPuzzleGoalTest;
-import aima.core.environment.eightpuzzle.ManhattanHeuristicFunction;
-import aima.core.environment.eightpuzzle.MisplacedTilleHeuristicFunction;
-import aima.core.search.framework.SearchAgent;
-import aima.core.search.framework.SearchForActions;
-import aima.core.search.framework.problem.Problem;
-import aima.core.search.framework.qsearch.GraphSearch;
-import aima.core.search.informed.AStarSearch;
-import aima.core.search.informed.GreedyBestFirstSearch;
-import aima.core.search.local.SimulatedAnnealingSearch;
-import aima.core.search.uninformed.DepthLimitedSearch;
-import aima.core.search.uninformed.IterativeDeepeningSearch;
+import csc4500.core.agent.Action;
+import csc4500.core.environment.eightpuzzle.EightPuzzleBoard;
+import csc4500.core.environment.eightpuzzle.EightPuzzleFunctionFactory;
+import csc4500.core.environment.eightpuzzle.EightPuzzleGoalTest;
+import csc4500.core.environment.eightpuzzle.ManhattanHeuristicFunction;
+import csc4500.core.environment.eightpuzzle.MisplacedTilleHeuristicFunction;
+import csc4500.core.search.framework.SearchAgent;
+import csc4500.core.search.framework.SearchForActions;
+import csc4500.core.search.framework.evalfunc.HeuristicFunction;
+import csc4500.core.search.framework.problem.Problem;
+import csc4500.core.search.framework.qsearch.GraphSearch;
+import csc4500.core.search.informed.AStarSearch;
+import csc4500.core.search.informed.GreedyBestFirstSearch;
+
 
 /**
- * @author Ravi Mohan
+ * @author YOUR NAME HERE
+ * Code adapted for Villanova CSC 4500 Project assignment
  * 
  */
 
 public class CSC4500Project {
+	
+	
+	//EightPuzzle Boards are constructed here
 	static EightPuzzleBoard boardWithThreeMoveSolution = new EightPuzzleBoard(new int[] { 1, 2, 5, 3, 4, 0, 6, 7, 8 });;
 
 	static EightPuzzleBoard random1 = new EightPuzzleBoard(new int[] { 1, 4, 2, 7, 5, 8, 3, 0, 6 });
@@ -33,49 +38,25 @@ public class CSC4500Project {
 	static EightPuzzleBoard extreme = new EightPuzzleBoard(new int[] { 0, 8, 7, 6, 5, 4, 3, 2, 1 });
 
 	public static void main(String[] args) {
-	
-		eightPuzzleAStarDemo(random1);
-		//eightPuzzleAStarManhattanDemo(extreme);
+		
+		
+	//Here is where you call each search algorithm function, 
+    //with the arguments provided of eight your puzzle board and Heuristic Function
+		eightPuzzleAStarDemo(random1, new MisplacedTilleHeuristicFunction());
+		eightPuzzleAStarManhattanDemo(extreme, new ManhattanHeuristicFunction());
 
 	}
 
-	private static void eightPuzzleDLSDemo(EightPuzzleBoard puzzleBoard) {
-		System.out.println("\nEightPuzzleDemo recursive DLS (9) -->");
-		try {
-			Problem problem = new Problem(puzzleBoard, EightPuzzleFunctionFactory.getActionsFunction(),
-					EightPuzzleFunctionFactory.getResultFunction(), new EightPuzzleGoalTest());
-			SearchForActions search = new DepthLimitedSearch(9);
-			SearchAgent agent = new SearchAgent(problem, search);
-			printActions(agent.getActions());
-			printInstrumentation(agent.getInstrumentation());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 
-	}
 
-	private static void eightPuzzleIDLSDemo(EightPuzzleBoard puzzleBoard) {
-		System.out.println("\nEightPuzzleDemo Iterative DLS -->");
-		try {
-			Problem problem = new Problem(puzzleBoard, EightPuzzleFunctionFactory.getActionsFunction(),
-					EightPuzzleFunctionFactory.getResultFunction(), new EightPuzzleGoalTest());
-			SearchForActions search = new IterativeDeepeningSearch();
-			SearchAgent agent = new SearchAgent(problem, search);
-			printActions(agent.getActions());
-			printInstrumentation(agent.getInstrumentation());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	private static void eightPuzzleGreedyBestFirstDemo(EightPuzzleBoard puzzleBoard) {
+	//Within each search function, the Heuristic Function can be changed
+	private static void eightPuzzleGreedyBestFirstDemo(EightPuzzleBoard puzzleBoard, HeuristicFunction hf) {
 		System.out.println("\nEightPuzzleDemo Greedy Best First Search (MisplacedTileHeursitic)-->");
 		try {
 			Problem problem = new Problem(puzzleBoard, EightPuzzleFunctionFactory.getActionsFunction(),
 					EightPuzzleFunctionFactory.getResultFunction(), new EightPuzzleGoalTest());
 			SearchForActions search = new GreedyBestFirstSearch(new GraphSearch(),
-					new MisplacedTilleHeuristicFunction());
+					hf);
 			SearchAgent agent = new SearchAgent(problem, search);
 			printActions(agent.getActions());
 			printInstrumentation(agent.getInstrumentation());
@@ -85,12 +66,12 @@ public class CSC4500Project {
 
 	}
 
-	private static void eightPuzzleGreedyBestFirstManhattanDemo(EightPuzzleBoard puzzleBoard) {
+	private static void eightPuzzleGreedyBestFirstManhattanDemo(EightPuzzleBoard puzzleBoard, HeuristicFunction hf) {
 		System.out.println("\nEightPuzzleDemo Greedy Best First Search (ManhattanHeursitic)-->");
 		try {
 			Problem problem = new Problem(puzzleBoard, EightPuzzleFunctionFactory.getActionsFunction(),
 					EightPuzzleFunctionFactory.getResultFunction(), new EightPuzzleGoalTest());
-			SearchForActions search = new GreedyBestFirstSearch(new GraphSearch(), new ManhattanHeuristicFunction());
+			SearchForActions search = new GreedyBestFirstSearch(new GraphSearch(), hf);
 			SearchAgent agent = new SearchAgent(problem, search);
 			printActions(agent.getActions());
 			printInstrumentation(agent.getInstrumentation());
@@ -100,12 +81,12 @@ public class CSC4500Project {
 
 	}
 
-	private static void eightPuzzleAStarDemo(EightPuzzleBoard puzzleBoard) {
+	private static void eightPuzzleAStarDemo(EightPuzzleBoard puzzleBoard, HeuristicFunction hf) {
 		System.out.println("\nEightPuzzleDemo AStar Search (MisplacedTileHeursitic)-->");
 		try {
 			Problem problem = new Problem(puzzleBoard, EightPuzzleFunctionFactory.getActionsFunction(),
 					EightPuzzleFunctionFactory.getResultFunction(), new EightPuzzleGoalTest());
-			SearchForActions search = new AStarSearch(new GraphSearch(), new MisplacedTilleHeuristicFunction());
+			SearchForActions search = new AStarSearch(new GraphSearch(), hf);
 			SearchAgent agent = new SearchAgent(problem, search);
 			printActions(agent.getActions());
 			printInstrumentation(agent.getInstrumentation());
@@ -116,28 +97,14 @@ public class CSC4500Project {
 
 	}
 
-	private static void eightPuzzleSimulatedAnnealingDemo(EightPuzzleBoard puzzleBoard) {
-		System.out.println("\nEightPuzzleDemo Simulated Annealing  Search -->");
-		try {
-			Problem problem = new Problem(puzzleBoard, EightPuzzleFunctionFactory.getActionsFunction(),
-					EightPuzzleFunctionFactory.getResultFunction(), new EightPuzzleGoalTest());
-			SimulatedAnnealingSearch search = new SimulatedAnnealingSearch(new ManhattanHeuristicFunction());
-			SearchAgent agent = new SearchAgent(problem, search);
-			printActions(agent.getActions());
-			System.out.println("Search Outcome=" + search.getOutcome());
-			System.out.println("Final State=\n" + search.getLastSearchState());
-			printInstrumentation(agent.getInstrumentation());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
-	private static void eightPuzzleAStarManhattanDemo(EightPuzzleBoard puzzleBoard) {
+
+	private static void eightPuzzleAStarManhattanDemo(EightPuzzleBoard puzzleBoard, HeuristicFunction hf) {
 		System.out.println("\nEightPuzzleDemo AStar Search (ManhattanHeursitic)-->");
 		try {
 			Problem problem = new Problem(puzzleBoard, EightPuzzleFunctionFactory.getActionsFunction(),
 					EightPuzzleFunctionFactory.getResultFunction(), new EightPuzzleGoalTest());
-			SearchForActions search = new AStarSearch(new GraphSearch(), new ManhattanHeuristicFunction());
+			SearchForActions search = new AStarSearch(new GraphSearch(), hf);
 			SearchAgent agent = new SearchAgent(problem, search);
 			printActions(agent.getActions());
 			printInstrumentation(agent.getInstrumentation());
