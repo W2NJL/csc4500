@@ -38,6 +38,7 @@ public class CSC4500Project {
 
 	public static void main(String[] args) {
 
+	
 		// Here is where you call each search algorithm function,
 		// with the arguments provided of eight your puzzle board and Heuristic Function
 		eightPuzzleAStarDemo(random1, new MisplacedTilleHeuristicFunction());
@@ -48,20 +49,6 @@ public class CSC4500Project {
 	
 
 	// Within each search function, the Heuristic Function can be changed
-	private static void eightPuzzleDLSDemo(EightPuzzleBoard puzzleBoard) {
-		System.out.println("\nEightPuzzleDemo recursive DLS (9) -->");
-		try {
-			Problem problem = new Problem(puzzleBoard, EightPuzzleFunctionFactory.getActionsFunction(),
-					EightPuzzleFunctionFactory.getResultFunction(), new EightPuzzleGoalTest());
-			SearchForActions search = new DepthLimitedSearch(9);
-			SearchAgent agent = new SearchAgent(problem, search);
-			printActions(agent.getActions());
-			printInstrumentation(agent.getInstrumentation());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
 
 	private static void eightPuzzleIDLSDemo(EightPuzzleBoard puzzleBoard) {
 		System.out.println("\nEightPuzzleDemo Iterative DLS -->");
