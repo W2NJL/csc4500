@@ -1,8 +1,6 @@
 package csc4500.core.search.uninformed;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import csc4500.core.agent.Action;
 import csc4500.core.search.framework.Metrics;
@@ -42,6 +40,8 @@ import csc4500.core.util.CancelableThread;
  * @author Ciaran O'Reilly
  * @author Mike Stampone
  * @author Ruediger Lunde
+ * 
+ * Modified by @kinda_author Nick Langan to add metrics for QUEUE_SIZE, MAX_QUEUE_SIZE, EFFECTIVE_BRANCH_FACTOR
  */
 public class DepthLimitedSearch implements SearchForActions, SearchForStates {
 
@@ -108,6 +108,8 @@ public class DepthLimitedSearch implements SearchForActions, SearchForStates {
 	 */
 	private Node recursiveDLS(Node node, Problem problem, int limit) {
 		List<Node> storage;
+		
+		//2-7-22 Amended to calculate queue size
 
 		
 		// if problem.GOAL-TEST(node.STATE) then return SOLUTION(node)
@@ -161,54 +163,7 @@ public class DepthLimitedSearch implements SearchForActions, SearchForStates {
 		}
 	}
 
-protected double getEBF(int numExpandCalls, double solnlength) {
-		
-		double tolerance = 0.01; 
-		double delta = 0.01; 
-		double powerSum = 0.0;
-		double error = 0.0;
-		double last_error_sign = -1; 
-		double limit = numExpandCalls;
-		double branch_factor_est = 1.0;
-		
-		
-		
-		do {
-			powerSum = 0; 
-			for (int i=0; i<= solnlength; i++) {
-					
-				powerSum += Math.pow(branch_factor_est, (double)i);
-						
-				}
-				
-				error = powerSum - limit; 	
-				
-			if(error >0) {
-				branch_factor_est -= delta; 
-				
-				if(Math.signum(error) != last_error_sign) {
-					last_error_sign = Math.signum(error);
-					delta = delta/2.0; 
-				}
-			}
-			else {
-				branch_factor_est += delta; 
-								
-								if(Math.signum(error) != last_error_sign) {
-									last_error_sign = Math.signum(error);
-									delta = delta/2.0; 
-								}
-				
-			}
-		}
-				
-			while (Math.abs(error)> tolerance); 
-		
-		
-		
-		
-		return branch_factor_est;
-	}
+
 	@Override
 	public NodeExpander getNodeExpander() {
 		return nodeExpander;

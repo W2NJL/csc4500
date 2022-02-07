@@ -169,13 +169,17 @@ protected double getEBF(int numExpandCalls, double solnlength) {
 	//
 
 	private void updateMetrics(Metrics dlsMetrics) {
+		
+		//2-7-22 Amended METRIC_NODES_EXPANDED to getLong
 
 		metrics.set(METRIC_NODES_EXPANDED,
-				metrics.getInt(METRIC_NODES_EXPANDED) + dlsMetrics.getInt(METRIC_NODES_EXPANDED));
+				metrics.getLong(METRIC_NODES_EXPANDED) + dlsMetrics.getLong(METRIC_NODES_EXPANDED));
 		metrics.set(METRIC_PATH_COST, dlsMetrics.getDouble(METRIC_PATH_COST));
 		metrics.set(METRIC_QUEUE_SIZE, dlsMetrics.getInt(METRIC_QUEUE_SIZE));
 		
 		if (dlsMetrics.getDouble(METRIC_PATH_COST) > 0) {
+			
+			//2-7-22 Added calculation for EBF
 			
 			metrics.set(METRIC_EFFECTIVE_BRANCH_FACTOR, getEBF(nodeExpander.getNumOfExpandCalls(), dlsMetrics.getDouble(METRIC_PATH_COST)));
 			metrics.set(METRIC_MAX_QUEUE_SIZE, dlsMetrics.getInt(METRIC_MAX_QUEUE_SIZE));

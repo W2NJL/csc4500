@@ -50,7 +50,7 @@ public class CSC4500Project {
 		// with the arguments provided of eight your puzzle board and Heuristic Function
 		eightPuzzleAStarDemo(random1, new MisplacedTilleHeuristicFunction());
 		eightPuzzleAStarManhattanDemo(test, new ManhattanHeuristicFunction());
-		eightPuzzleIDLSDemo(random1);
+		eightPuzzleIDLSDemo(boardWithThreeMoveSolution);
 	
 	
 	}
