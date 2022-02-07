@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Properties;
 
 import csc4500.core.agent.Action;
+import csc4500.core.environment.eightpuzzle.BidirectionalEightPuzzleProblem;
 import csc4500.core.environment.eightpuzzle.EightPuzzleBoard;
 import csc4500.core.environment.eightpuzzle.EightPuzzleFunctionFactory;
 import csc4500.core.environment.eightpuzzle.EightPuzzleGoalTest;
@@ -19,6 +20,7 @@ import csc4500.core.search.framework.qsearch.GraphSearch;
 import csc4500.core.search.informed.AStarSearch;
 import csc4500.core.search.informed.GreedyBestFirstSearch;
 import csc4500.core.search.local.SimulatedAnnealingSearch;
+import csc4500.core.search.uninformed.BreadthFirstSearch;
 import csc4500.core.search.uninformed.DepthLimitedSearch;
 import csc4500.core.search.uninformed.IterativeDeepeningSearch;
 
@@ -35,6 +37,11 @@ public class CSC4500Project {
 	static EightPuzzleBoard random1 = new EightPuzzleBoard(new int[] { 1, 4, 2, 7, 5, 8, 3, 0, 6 });
 
 	static EightPuzzleBoard extreme = new EightPuzzleBoard(new int[] { 0, 8, 7, 6, 5, 4, 3, 2, 1 });
+	
+	static EightPuzzleBoard test = new EightPuzzleBoard(new int[] {5, 8, 7, 2, 4, 6, 0, 1, 3});
+	
+
+
 
 	public static void main(String[] args) {
 
@@ -42,19 +49,36 @@ public class CSC4500Project {
 		// Here is where you call each search algorithm function,
 		// with the arguments provided of eight your puzzle board and Heuristic Function
 		eightPuzzleAStarDemo(random1, new MisplacedTilleHeuristicFunction());
-		eightPuzzleAStarManhattanDemo(extreme, new ManhattanHeuristicFunction());
-
+		eightPuzzleAStarManhattanDemo(test, new ManhattanHeuristicFunction());
+		eightPuzzleIDLSDemo(random1);
+	
+	
 	}
 	
 	
-
-	// Within each search function, the Heuristic Function can be changed
-
-	private static void eightPuzzleIDLSDemo(EightPuzzleBoard puzzleBoard) {
-		System.out.println("\nEightPuzzleDemo Iterative DLS -->");
+	private static void eightPuzzleDLSDemo(EightPuzzleBoard puzzleBoard) {
+		System.out.println("\nEightPuzzleDemo recursive DLS (9)");
 		try {
 			Problem problem = new Problem(puzzleBoard, EightPuzzleFunctionFactory.getActionsFunction(),
 					EightPuzzleFunctionFactory.getResultFunction(), new EightPuzzleGoalTest());
+			SearchForActions search = new DepthLimitedSearch(22);
+			SearchAgent agent = new SearchAgent(problem, search);
+			printActions(agent.getActions());
+			printInstrumentation(agent.getInstrumentation());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+
+	// Within each search function, the Heuristic Function can be changed
+	
+
+
+	private static void eightPuzzleIDLSDemo(EightPuzzleBoard puzzleBoard) {
+		System.out.println("\nEightPuzzleDemo Iterative DLS");
+		try {
+			Problem problem = new BidirectionalEightPuzzleProblem(puzzleBoard);
 			SearchForActions search = new IterativeDeepeningSearch();
 			SearchAgent agent = new SearchAgent(problem, search);
 			printActions(agent.getActions());
@@ -62,8 +86,22 @@ public class CSC4500Project {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
+	
+	private static void eightPuzzleBFSDemo(EightPuzzleBoard board) {
+		 System.out.println("\nEightPuzzleDemo Breadth First Search -->");
+		 try {
+		 Problem prob = new Problem(board, EightPuzzleFunctionFactory.getActionsFunction(),
+		 EightPuzzleFunctionFactory.getResultFunction(),
+		 new EightPuzzleGoalTest());
+		 SearchForActions search = new BreadthFirstSearch();
+		 SearchAgent agent = new SearchAgent(prob, search);
+		 printActions(agent.getActions());
+		 printInstrumentation(agent.getInstrumentation());
+		} catch (Exception e) {
+		e.printStackTrace();
+		}
+		}
 
 	private static void eightPuzzleGreedyBestFirstDemo(EightPuzzleBoard puzzleBoard, HeuristicFunction hf) {
 		System.out.println("\nEightPuzzleDemo Greedy Best First Search (MisplacedTileHeursitic)-->");

@@ -35,7 +35,10 @@ import csc4500.core.util.CancelableThread;
  */
 public class IterativeDeepeningSearch implements SearchForActions, SearchForStates {
 	public static final String METRIC_NODES_EXPANDED = "nodesExpanded";
+	public static final String METRIC_QUEUE_SIZE = "queueSize";
+	public static final String METRIC_MAX_QUEUE_SIZE = "maxQueueSize";
 	public static final String METRIC_PATH_COST = "pathCost";
+	public static final String METRIC_EFFECTIVE_BRANCH_FACTOR = "effectiveBranchFactor";
 
 	private final NodeExpander nodeExpander;
 	private final Metrics metrics;
@@ -91,13 +94,74 @@ public class IterativeDeepeningSearch implements SearchForActions, SearchForStat
 	public Metrics getMetrics() {
 		return metrics;
 	}
+	
+	protected void updateMetrics(int queueSize) {
+		metrics.set(METRIC_QUEUE_SIZE, queueSize);
+		int maxQSize = metrics.getInt(METRIC_MAX_QUEUE_SIZE);
+		if (queueSize > maxQSize) {
+			metrics.set(METRIC_MAX_QUEUE_SIZE, queueSize);
+		}
+	}
 
 	/**
 	 * Sets the nodes expanded and path cost metrics to zero.
 	 */
 	private void clearInstrumentation() {
+		nodeExpander.resetCounter();
 		metrics.set(METRIC_NODES_EXPANDED, 0);
+		metrics.set(METRIC_QUEUE_SIZE, 0);
+		metrics.set(METRIC_MAX_QUEUE_SIZE, 0);
 		metrics.set(METRIC_PATH_COST, 0);
+		metrics.set(METRIC_EFFECTIVE_BRANCH_FACTOR, 0);
+	}
+	
+protected double getEBF(int numExpandCalls, double solnlength) {
+		
+		double tolerance = 0.01; 
+		double delta = 0.01; 
+		double powerSum = 0.0;
+		double error = 0.0;
+		double last_error_sign = -1; 
+		double limit = numExpandCalls;
+		double branch_factor_est = 1.0;
+		
+		
+		
+		do {
+			powerSum = 0; 
+			for (int i=0; i<= solnlength; i++) {
+					
+				powerSum += Math.pow(branch_factor_est, (double)i);
+						
+				}
+				
+				error = powerSum - limit; 	
+				
+			if(error >0) {
+				branch_factor_est -= delta; 
+				
+				if(Math.signum(error) != last_error_sign) {
+					last_error_sign = Math.signum(error);
+					delta = delta/2.0; 
+				}
+			}
+			else {
+				branch_factor_est += delta; 
+								
+								if(Math.signum(error) != last_error_sign) {
+									last_error_sign = Math.signum(error);
+									delta = delta/2.0; 
+								}
+				
+			}
+		}
+				
+			while (Math.abs(error)> tolerance); 
+		
+		
+		
+		
+		return branch_factor_est;
 	}
 
 	//
@@ -105,8 +169,16 @@ public class IterativeDeepeningSearch implements SearchForActions, SearchForStat
 	//
 
 	private void updateMetrics(Metrics dlsMetrics) {
+
 		metrics.set(METRIC_NODES_EXPANDED,
 				metrics.getInt(METRIC_NODES_EXPANDED) + dlsMetrics.getInt(METRIC_NODES_EXPANDED));
 		metrics.set(METRIC_PATH_COST, dlsMetrics.getDouble(METRIC_PATH_COST));
+		metrics.set(METRIC_QUEUE_SIZE, dlsMetrics.getInt(METRIC_QUEUE_SIZE));
+		
+		if (dlsMetrics.getDouble(METRIC_PATH_COST) > 0) {
+			
+			metrics.set(METRIC_EFFECTIVE_BRANCH_FACTOR, getEBF(nodeExpander.getNumOfExpandCalls(), dlsMetrics.getDouble(METRIC_PATH_COST)));
+			metrics.set(METRIC_MAX_QUEUE_SIZE, dlsMetrics.getInt(METRIC_MAX_QUEUE_SIZE));
+		}
 	}
 }
