@@ -20,8 +20,9 @@ public class CustomHeuristicFunction implements HeuristicFunction {
 
 		return retVal;
 
+	
+	  
 	}
-
 
 
 

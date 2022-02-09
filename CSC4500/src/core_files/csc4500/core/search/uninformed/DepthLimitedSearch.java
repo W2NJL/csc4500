@@ -108,17 +108,21 @@ public class DepthLimitedSearch implements SearchForActions, SearchForStates {
 	 */
 	private Node recursiveDLS(Node node, Problem problem, int limit) {
 		List<Node> storage;
+
 		
 		//2-7-22 Amended to calculate queue size
+		//2-8-22 Amended to properly calculate queue, max queue, and EBF in DLS
 
 		
 		// if problem.GOAL-TEST(node.STATE) then return SOLUTION(node)
 		if (SearchUtils.isGoalState(problem, node)) {
 			metrics.set(METRIC_PATH_COST, node.getPathCost());
+			metrics.set(METRIC_EFFECTIVE_BRANCH_FACTOR, getEBF(nodeExpander.getNumOfExpandCalls(), metrics.getDouble(METRIC_PATH_COST)));
+
 			return node;
 		} else if (0 == limit || CancelableThread.currIsCanceled()) {
 			//Code Nick added to decrement queue size
-			metrics.set(METRIC_QUEUE_SIZE, metrics.getInt(METRIC_QUEUE_SIZE)-1);
+			
 			// else if limit = 0 then return cutoff
 			return CUTOFF_NODE;
 		} else {
@@ -126,26 +130,31 @@ public class DepthLimitedSearch implements SearchForActions, SearchForStates {
 			// cutoff_occurred? <- false
 			boolean cutoff_occurred = false;
 			// for each action in problem.ACTIONS(node.STATE) do
-			metrics.incrementInt(METRIC_NODES_EXPANDED);
+			metrics.set(METRIC_NODES_EXPANDED, metrics.getLong(METRIC_NODES_EXPANDED)+1);
 			
 			
 			storage = nodeExpander.expand(node, problem);
-			metrics.set(METRIC_QUEUE_SIZE, storage.size());
+			metrics.set(METRIC_QUEUE_SIZE, metrics.getInt(METRIC_QUEUE_SIZE) + storage.size());
+			
 			
 			if(metrics.getInt(METRIC_QUEUE_SIZE) >metrics.getInt(METRIC_MAX_QUEUE_SIZE) ) {
 				metrics.set(METRIC_MAX_QUEUE_SIZE, metrics.getInt(METRIC_QUEUE_SIZE));
 			}
 			
 			for (Node child: storage) {
+				
 				// child <- CHILD-NODE(problem, node, action)
 				// result <- RECURSIVE-DLS(child, problem, limit - 1)
 				Node result = recursiveDLS(child, problem, limit - 1);
+				metrics.set(METRIC_QUEUE_SIZE, metrics.getInt(METRIC_QUEUE_SIZE)-1);
 				// if result = cutoff then cutoff_occurred? <- true
 				if (result == CUTOFF_NODE) {
 					cutoff_occurred = true;
 					
 				} else if (result != null) {
 					// else if result != failure then return result
+					
+					
 					
 					return result;
 				}
@@ -176,6 +185,55 @@ public class DepthLimitedSearch implements SearchForActions, SearchForStates {
 	public Metrics getMetrics() {
 		
 		return metrics;
+	}
+	
+protected double getEBF(int numExpandCalls, double solnlength) {
+		
+		double tolerance = 0.01; 
+		double delta = 0.01; 
+		double powerSum = 0.0;
+		double error = 0.0;
+		double last_error_sign = -1; 
+		double limit = numExpandCalls;
+		double branch_factor_est = 1.0;
+		
+		
+		
+		do {
+			powerSum = 0; 
+			for (int i=0; i<= solnlength; i++) {
+					
+				powerSum += Math.pow(branch_factor_est, (double)i);
+						
+				}
+				
+				error = powerSum - limit; 	
+				
+			if(error >0) {
+				branch_factor_est -= delta; 
+				
+				if(Math.signum(error) != last_error_sign) {
+					last_error_sign = Math.signum(error);
+					delta = delta/2.0; 
+				}
+			}
+			else {
+				branch_factor_est += delta; 
+								
+								if(Math.signum(error) != last_error_sign) {
+									last_error_sign = Math.signum(error);
+									delta = delta/2.0; 
+								}
+				
+			}
+		}
+				
+			while (Math.abs(error)> tolerance); 
+		
+		
+		
+		
+		return branch_factor_est;
 	}
 
 	/**

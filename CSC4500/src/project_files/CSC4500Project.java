@@ -38,7 +38,9 @@ public class CSC4500Project {
 
 	static EightPuzzleBoard extreme = new EightPuzzleBoard(new int[] { 0, 8, 7, 6, 5, 4, 3, 2, 1 });
 	
-	static EightPuzzleBoard test = new EightPuzzleBoard(new int[] {5, 8, 7, 2, 4, 6, 0, 1, 3});
+	
+	
+	static EightPuzzleBoard test = new EightPuzzleBoard(new int[] {3, 2, 5, 8, 4, 1, 0, 6, 7});
 	
 
 
@@ -50,7 +52,7 @@ public class CSC4500Project {
 		// with the arguments provided of eight your puzzle board and Heuristic Function
 		eightPuzzleAStarDemo(random1, new MisplacedTilleHeuristicFunction());
 		eightPuzzleAStarManhattanDemo(test, new ManhattanHeuristicFunction());
-		eightPuzzleIDLSDemo(boardWithThreeMoveSolution);
+		eightPuzzleDLSDemo(extreme);
 	
 	
 	}
